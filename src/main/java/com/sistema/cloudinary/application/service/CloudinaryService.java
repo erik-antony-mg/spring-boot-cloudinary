@@ -31,12 +31,13 @@ public class CloudinaryService {
 
     public String uploadFile(MultipartFile file) {
         try {
-            File  uploadedFile = convertMultiPartToFile(file);
+            File  imagenCopiada = convertMultiPartToFile(file);
 
             Map<String, String> options = new HashMap<>();
 
             String nombreDeLaImagen=file.getOriginalFilename();
             assert nombreDeLaImagen != null;
+
             String nombreCortado= Objects.requireNonNull(nombreDeLaImagen).substring(0,nombreDeLaImagen.indexOf("."));
 
             UUID uuid = UUID.randomUUID();
@@ -44,12 +45,12 @@ public class CloudinaryService {
 
             options.put("public_id", nombreFinalEnCloudinary);
 
-            Map uploadResult = cloudinary.uploader().upload(uploadedFile, options);
+            Map uploadResult = cloudinary.uploader().upload(imagenCopiada, options);
 
-            boolean deleteResult = uploadedFile.delete();
+            boolean deleteResult = imagenCopiada.delete();
             if (!deleteResult) {
                 // Manejar el caso en el que la eliminación del archivo falló
-                System.err.println("fallo al eliminar el archivo: " + uploadedFile.getAbsolutePath());
+                System.err.println("fallo al eliminar el archivo: " + imagenCopiada.getName());
             }
 
             return uploadResult.get("url").toString();

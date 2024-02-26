@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -45,12 +46,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(()-> new RuntimeException("usuario no encontrado"));
         usuario.setUsuarioId(usuarioId);
-        String idPublic= cloudinaryService.extractPublicIdFromImageUrl(usuario.getFotoDePerfil());
-        try {
-            cloudinaryService.delete(idPublic);
-        } catch (IOException e) {
-            throw new RuntimeException("no se pudo eliminar el antiguo foto");
+        if (!usuario.getFotoDePerfil().equals("sin_imagen") ) {
+            String idPublic= cloudinaryService.extractPublicIdFromImageUrl(usuario.getFotoDePerfil());
+            try {
+                cloudinaryService.delete(idPublic);
+            } catch (IOException e) {
+                throw new RuntimeException("no se pudo eliminar el antiguo foto");
+            }
         }
+
         usuario.setFotoDePerfil(cloudinaryService.uploadFile(multipartFile));
 
         return usuarioRepository.save(usuario);
